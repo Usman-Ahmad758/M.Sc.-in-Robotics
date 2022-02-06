@@ -1,0 +1,98 @@
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <sys/wait.h>
+#include <errno.h>
+
+//Please comment the "#define WITH_SIGNALS" to run the code without signals 
+
+#define N 5
+#define THINKING 0
+#define HUNGRY 1
+#define EATING 2
+
+#define WITH_SIGNALS
+#define NUM_CHILD  5
+
+void philosopher(int i) {
+    while (TRUE) {
+    think( );
+    take_forks(i);
+    eat( );
+    put_forks(i);
+    }
+}
+
+void take_forks(int i) {
+    down(&mutex);
+    state[i] = HUNGRY;
+    test(i);
+    up(&mutex);
+    down(&s[i]);
+}
+
+void put_forks(i) {
+    down(&mutex);
+    state[i] = THINKING;
+    test(LEFT);
+    test(RIGHT);
+    up(&mutex);
+}
+
+void test(i) {
+    if (state[i] == HUNGRY && \\
+    state[LEFT] != EATING && \\
+    state[RIGHT] != EATING) {
+    state[i] = EATING;
+    up(&s[i]);
+    }
+}
+
+
+
+int main(){
+    
+int count=0,status;
+pid_t pid[NUM_CHILD];
+
+    for(int i=0;i<NUM_CHILD ;i++){
+        pid[i] = fork();	
+        if (pid[i]==0){
+            printf("child[%d] created with parent[%d]\n",getpid(),getppid());
+            sleep(10);
+            printf("Finished child[%d] with parent[%d]\n",getpid(),getppid());
+            exit(0);
+        }
+        else if(pid[i]<0){
+            printf("Error: Failed to create child process\n");
+            kill(0,SIGTERM);
+            exit(1);
+        }
+        sleep(1);
+    }
+    printf("All child processes are created with parent[%d]\n",getpid());
+    
+    while(wait(&status) != -1 || errno != ECHILD){
+        ++count;
+    }
+    printf("All [%d] child processes has completed Execution with parent[%d] with status [%d]\n",count,getpid(),status);
+    printf("Without  Signals");    
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
