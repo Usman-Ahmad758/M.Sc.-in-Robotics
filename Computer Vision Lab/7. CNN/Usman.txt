@@ -1,0 +1,37 @@
+model = Sequential()                                 # Linear stacking of layers
+
+# Convolution Layer 1
+model.add(Conv2D(32, (5, 5), input_shape=(28,28,1),padding="same")) # 64 different 5x5 kernels -- so 64 feature maps
+model.add(Activation('relu') )                       # activation
+model.add(MaxPooling2D(pool_size=(2,2)))             # Pool the max values over a 2x2 kernel
+
+# Convolution Layer 2
+model.add(Conv2D(64, (5, 5),padding="same"))                        # 128 different 5x5 kernels -- so 128 feature maps
+model.add(Activation('relu'))                        # activation
+model.add(MaxPooling2D(pool_size=(2,2)))             # Pool the max values over a 2x2 kernel
+
+# Convolution Layer 3
+model.add(Conv2D(128, (5, 5)))                        #256 different 5x5 kernels -- so 256 feature maps
+model.add(Activation('relu'))                        # activation
+model.add(MaxPooling2D(pool_size=(2,2)))             # Pool the max values over a 2x2 kernel
+
+model.add(Flatten())                                 # Flatten final output matrix into a vector
+
+# Fully Connected Layer 
+model.add(Dense(1024))                                # 1024 FC nodes
+model.add(Activation('relu'))                        # activation
+model.add(Dropout(0.2))                              # dropout
+
+# Fully Connected Layer 
+model.add(Dense(512))                                # 512 FC nodes
+model.add(Activation('relu'))                        # activation
+model.add(Dropout(0.2))                              # dropout
+
+# Fully Connected Layer                        
+model.add(Dense(10))                                 # final 10 FC nodes
+model.add(Activation('softmax'))                     # softmax activation
+
+
+# we'll use the same optimizer
+adam = optimizers.Adam(lr=0.001)
+model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
